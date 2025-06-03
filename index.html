@@ -3,62 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מתכנן טיולים מתקדם</title>
-    
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""/>
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css">
+    <title>מתכנן נסיעות - ניהול מסלולים ותקציב</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Header -->
-    <header class="app-header">
-        <h1><i class="fas fa-map-marked-alt"></i> מתכנן טיולים</h1>
-        <div class="header-actions">
-            <button class="btn-icon" id="themeToggle">
-                <i class="fas fa-moon"></i>
-            </button>
-            <button class="btn-icon" id="filterToggle">
-                <i class="fas fa-filter"></i>
-            </button>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="container">
+                <div class="header-content">
+                    <h1 class="app-title">🗺️ מתכנן נסיעות</h1>
+                    <div class="theme-toggle">
+                        <button id="themeToggle" class="btn btn--secondary btn--sm">🌙</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="app-nav">
+            <div class="container">
+                <ul class="nav-tabs">
+                    <li class="nav-tab active" data-tab="routes">
+                        <span class="nav-icon">🗺️</span>
+                        מסלולים
+                    </li>
+                    <li class="nav-tab" data-tab="budget">
+                        <span class="nav-icon">💰</span>
+                        תקציב
+                    </li>
+                    <li class="nav-tab" data-tab="upload">
+                        <span class="nav-icon">📁</span>
+                        העלאת קבצים
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <div class="container">
+                <!-- Routes Tab -->
+                <section id="routes-section" class="tab-content active">
+                    <div class="routes-layout">
+                        <div class="routes-sidebar">
+                            <div class="card">
+                                <div class="card__header">
+                                    <h3>פרטי המסלול</h3>
+                                    <button id="addRouteBtn" class="btn btn--primary btn--sm">+ מסלול חדש</button>
+                                </div>
+                                <div class="card__body">
+                                    <div class="form-group">
+                                        <label class="form-label">בחר מסלול</label>
+                                        <select id="routeSelect" class="form-control">
+                                            <option value="">בחר מסלול...</option>
+                                        </select>
+                                    </div>
+                                    <div id="routeDetails" class="route-details hidden">
+                                        <div class="route-info">
+                                            <p><strong>מרחק:</strong> <span id="routeDistance">-</span></p>
+                                            <p><strong>זמן נסיעה:</strong> <span id="routeDuration">-</span></p>
+                                        </div>
+                                        <div class="waypoints-section">
+                                            <h4>נקודות ציון</h4>
+                                            <ul id="waypointsList" class="waypoints-list"></ul>
+                                            <button id="addWaypointBtn" class="btn btn--secondary btn--sm btn--full-width">+ הוסף נקודת ציון</button>
+                                        </div>
+                                        <div class="route-actions">
+                                            <button id="optimizeRouteBtn" class="btn btn--primary btn--sm">בצע אופטימיזציה</button>
+                                            <button id="deleteRouteBtn" class="btn btn--outline btn--sm">מחק מסלול</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="routes-main">
+                            <div class="card">
+                                <div class="card__body">
+                                    <div id="mapContainer" class="map-container">
+                                        <div class="map-placeholder">
+                                            <p>מפה אינטרקטיבית</p>
+                                            <small>לחץ להוספת נקודות ציון</small>
+                                        </div>
+                                        <canvas id="mapCanvas" width="600" height="400"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Budget Tab -->
+                <section id="budget-section" class="tab-content">
+                    <div class="budget-layout">
+                        <div class="budget-sidebar">
+                            <div class="card">
+                                <div class="card__header">
+                                    <h3>סיכום תקציב</h3>
+                                </div>
+                                <div class="card__body">
+                                    <div class="budget-summary">
+                                        <div class="budget-item">
+                                            <span>תקציב כולל:</span>
+                                            <span id="totalBudget" class="budget-amount">₪8,000</span>
+                                        </div>
+                                        <div class="budget-item">
+                                            <span>הוצאות:</span>
+                                            <span id="totalSpent" class="budget-amount">₪4,950</span>
+                                        </div>
+                                        <div class="budget-item">
+                                            <span>נותר:</span>
+                                            <span id="totalRemaining" class="budget-amount">₪3,050</span>
+                                        </div>
+                                    </div>
+                                    <div class="budget-chart">
+                                        <canvas id="budgetChart" width="200" height="200"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="budget-main">
+                            <div class="card">
+                                <div class="card__header">
+                                    <h3>קטגוריות תקציב</h3>
+                                    <button id="addExpenseBtn" class="btn btn--primary btn--sm">+ הוסף הוצאה</button>
+                                </div>
+                                <div class="card__body">
+                                    <div id="budgetCategories" class="budget-categories"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- File Upload Tab -->
+                <section id="upload-section" class="tab-content">
+                    <div class="upload-layout">
+                        <div class="card">
+                            <div class="card__header">
+                                <h3>העלאת קבצי מסלול</h3>
+                            </div>
+                            <div class="card__body">
+                                <div id="dropZone" class="drop-zone">
+                                    <div class="drop-zone-content">
+                                        <span class="drop-zone-icon">📁</span>
+                                        <p>גרור קבצים לכאן או לחץ לבחירה</p>
+                                        <small>תומך בקבצי GPX, KML, JSON</small>
+                                        <input type="file" id="fileInput" accept=".gpx,.kml,.json" multiple hidden>
+                                        <button id="selectFilesBtn" class="btn btn--primary">בחר קבצים</button>
+                                    </div>
+                                </div>
+                                <div id="uploadedFiles" class="uploaded-files">
+                                    <h4>קבצים שהועלו</h4>
+                                    <div id="filesList" class="files-list"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Modals -->
+        <div id="waypointModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="waypointModalTitle">הוסף נקודת ציון</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">שם המקום</label>
+                        <input type="text" id="waypointName" class="form-control" placeholder="הכנס שם מקום">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">הערות</label>
+                        <textarea id="waypointNotes" class="form-control" placeholder="הערות נוספות (אופציונלי)"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="saveWaypointBtn" class="btn btn--primary">שמור</button>
+                    <button class="btn btn--secondary modal-close">בטל</button>
+                </div>
+            </div>
         </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="app-container">
-        <!-- Routes Section -->
-        <section class="routes-section active">
-            <div class="routes-grid" id="routesContainer"></div>
-        </section>
+        <div id="expenseModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="expenseModalTitle">הוסף הוצאה</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">קטגוריה</label>
+                        <select id="expenseCategory" class="form-control">
+                            <option value="">בחר קטגוריה...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">סכום</label>
+                        <input type="number" id="expenseAmount" class="form-control" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">תיאור</label>
+                        <input type="text" id="expenseDescription" class="form-control" placeholder="תיאור ההוצאה">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="saveExpenseBtn" class="btn btn--primary">שמור</button>
+                    <button class="btn btn--secondary modal-close">בטל</button>
+                </div>
+            </div>
+        </div>
 
-        <!-- Map Section -->
-        <section class="map-section">
-            <div id="map"></div>
-        </section>
-    </main>
+        <div id="routeModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>מסלול חדש</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">שם המסלול</label>
+                        <input type="text" id="routeName" class="form-control" placeholder="הכנס שם למסלול">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="saveRouteBtn" class="btn btn--primary">צור מסלול</button>
+                    <button class="btn btn--secondary modal-close">בטל</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <button class="nav-btn active" data-section="routes">
-            <i class="fas fa-route"></i>
-            <span>מסלולים</span>
-        </button>
-        <button class="nav-btn" data-section="map">
-            <i class="fas fa-map"></i>
-            <span>מפה</span>
-        </button>
-    </nav>
-
-    <!-- Scripts -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""></script>
-    <script src="js/app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
