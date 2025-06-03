@@ -1,0 +1,75 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Heebo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  direction: rtl;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+.gm-style-iw {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+.gm-style-iw-d {
+  direction: rtl !important;
+}
+
+/* אנימציות */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* סגנונות למפה */
+.gm-style .gm-style-cc {
+  direction: ltr;
+}
+
+.gm-style .gm-style-mtc {
+  direction: ltr;
+}
+
+/* רספונסיביות */
+@media (max-width: 768px) {
+  .MuiContainer-root {
+    padding: 8px !important;
+  }
+  
+  .MuiCard-root {
+    margin-bottom: 16px !important;
+  }
+}
+
+/* עיצוב מותאם לכפתורים */
+.MuiButton-root {
+  border-radius: 25px !important;
+  text-transform: none !important;
+  font-weight: 500 !important;
+}
+
+/* עיצוב מותאם לכרטיסים */
+.MuiCard-root {
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1) !important;
+  transition: transform 0.2s ease-in-out !important;
+}
+
+.MuiCard-root:hover {
+  transform: translateY(-4px) !important;
+}
