@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Mobile Header -->
+    <!-- כותרת עליונה -->
     <header class="mobile-header">
         <div class="header-content">
             <h1>🗺️ מתכנן טיולים</h1>
@@ -19,9 +19,9 @@
         </div>
     </header>
 
-    <!-- Main Content -->
+    <!-- תוכן ראשי -->
     <main class="main-content">
-        <!-- Routes Section -->
+        <!-- מסכים -->
         <section id="routes-section" class="content-section active">
             <div class="section-header">
                 <h2>מסלולים מומלצים</h2>
@@ -30,16 +30,33 @@
                         <option value="all">כל המסלולים</option>
                         <option value="coastal">מסלולי חוף</option>
                         <option value="mountain">אזורי הרים</option>
+                        <option value="custom">מותאם אישית</option>
                     </select>
                 </div>
             </div>
-            
-            <div class="routes-container">
-                <!-- Route cards will be added here dynamically -->
+            <div class="routes-container" id="routesContainer">
+                <!-- כרטיסי מסלול יתווספו דינמית -->
+            </div>
+            <div class="add-route-container">
+                <button class="btn-add-route" onclick="showAddRouteForm()">
+                    <i class="fas fa-plus"></i> צור מסלול חדש
+                </button>
+            </div>
+            <!-- טופס הוספת מסלול -->
+            <div id="addRouteForm" class="modal" style="display:none;">
+                <div class="modal-content">
+                    <h3>הוסף מסלול חדש</h3>
+                    <input id="routeName" placeholder="שם המסלול" />
+                    <input id="routeType" placeholder="סוג (coastal/mountain/custom)" />
+                    <textarea id="routeStops" placeholder="נקודות עצירה (הפרד בפסיקים)"></textarea>
+                    <input id="routeDays" type="number" placeholder="מספר ימים" />
+                    <input id="routeDistance" type="number" placeholder="מרחק (ק״מ)" />
+                    <input id="routeCost" type="number" placeholder="עלות משוערת" />
+                    <button onclick="addCustomRoute()" class="btn-primary">הוסף</button>
+                    <button onclick="hideAddRouteForm()" class="btn-secondary">ביטול</button>
+                </div>
             </div>
         </section>
-
-        <!-- Map Section -->
         <section id="map-section" class="content-section">
             <div class="map-container">
                 <div id="map"></div>
@@ -47,7 +64,7 @@
         </section>
     </main>
 
-    <!-- Bottom Navigation -->
+    <!-- ניווט תחתון -->
     <nav class="bottom-nav">
         <div class="nav-content">
             <div class="nav-item active" onclick="showSection('routes')">
@@ -61,8 +78,8 @@
         </div>
     </nav>
 
-    <!-- Scripts -->
+    <!-- קישורים לסקריפטים -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/mobile.js"></script>
 </body>
 </html>
