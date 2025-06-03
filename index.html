@@ -1,75 +1,65 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מתכנן טיולים מתקדם - מובייל</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>מתכנן טיולים מתקדם</title>
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
-    <!-- Mobile Header -->
-    <header class="mobile-header">
-        <div class="header-content">
-            <button class="menu-toggle" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars"></i>
-            </button>
-            <h1>🗺️ מתכנן טיולים</h1>
-            <button class="theme-toggle" onclick="toggleTheme()">
-                <i class="fas fa-moon"></i>
-            </button>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Routes Section -->
-        <section id="routes-section" class="content-section active">
-            <!-- Add route cards and filter controls here -->
-        </section>
-
-        <!-- Budget Section -->
-        <section id="budget-section" class="content-section">
-            <!-- Budget management components -->
-        </section>
-
-        <!-- Map Section -->
-        <section id="map-section" class="content-section">
-            <div class="map-container">
-                <div id="map"></div>
-            </div>
-        </section>
-
-        <!-- Recommendations Section -->
-        <section id="recommendations-section" class="content-section">
-            <!-- Recommendations components -->
-        </section>
-    </main>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <div class="nav-content">
-            <div class="nav-item active" onclick="showSection('routes')">
-                <i class="fas fa-route"></i>
-                <span>מסלולים</span>
-            </div>
-            <div class="nav-item" onclick="showSection('budget')">
-                <i class="fas fa-wallet"></i>
-                <span>תקציב</span>
-            </div>
-            <div class="nav-item" onclick="showSection('map')">
-                <i class="fas fa-map"></i>
-                <span>מפה</span>
-            </div>
-            <div class="nav-item" onclick="showSection('recommendations')">
-                <i class="fas fa-star"></i>
-                <span>המלצות</span>
-            </div>
-        </div>
-    </nav>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="js/mobile.js"></script>
+<header class="mobile-header">
+  <div class="header-content">
+    <button class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+    <h1>🗺️ תכנון טיולים</h1>
+    <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+  </div>
+</header>
+<nav class="mobile-nav" id="navMenu" style="display:none;">
+  <div class="nav-item active" onclick="showSection('routes')"><i class="fas fa-route"></i> מסלולים</div>
+  <div class="nav-item" onclick="showSection('budget')"><i class="fas fa-wallet"></i> תקציב</div>
+  <div class="nav-item" onclick="showSection('map')"><i class="fas fa-map"></i> מפה</div>
+</nav>
+<main class="main-content">
+<section id="routes" class="section active">
+  <div class="section-header"><h2>מסלולים</h2></div>
+  <div class="filter-controls">
+    <button class="filter-tab active" data-filter="all" onclick="filterRoutes('all')">כל המסלולים</button>
+    <button class="filter-tab" data-filter="custom" onclick="filterRoutes('custom')">מותאמים</button>
+  </div>
+  <div id="routesContainer" class="routes-list"></div>
+  <button class="btn-add" onclick="createNewRoute()"><i class="fas fa-plus"></i> צור מסלול חדש</button>
+</section>
+<section id="budget" class="section" style="display:none;">
+  <div class="section-header"><h2>תקציב</h2></div>
+  <div class="budget-overview">
+    <div class="budget-card"><div class="amount" id="totalBudgetDisplay">5000</div><div>תקציב כולל</div></div>
+    <div class="budget-card"><div class="amount" id="spentBudgetDisplay">0</div><div>הוצאות</div></div>
+  </div>
+  <div class="budget-controls">
+    <input type="number" id="expenseAmount" placeholder="סכום" min="0" />
+    <select id="expenseCategory">
+      <option value="">קטגוריה</option>
+      <option value="לינה">🏨 לינה</option>
+      <option value="תחבורה">🚗 תחבורה</option>
+      <option value="אטרקציות">🎢 אטרקציות</option>
+      <option value="אוכל">🍽️ אוכל</option>
+    </select>
+    <button onclick="addExpense()">הוסף הוצאה</button>
+  </div>
+  <div id="expensesList"></div>
+</section>
+<section id="map" class="section" style="display:none;">
+  <div id="mapContainer"><div id="map"></div></div>
+</section>
+</main>
+<div class="bottom-nav">
+  <div class="nav-item active" onclick="showSection('routes')"><i class="fas fa-route"></i></div>
+  <div class="nav-item" onclick="showSection('budget')"><i class="fas fa-wallet"></i></div>
+  <div class="nav-item" onclick="showSection('map')"><i class="fas fa-map"></i></div>
+</div>
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
