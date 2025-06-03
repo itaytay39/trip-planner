@@ -4,7 +4,6 @@
     --accent: #e74c3c;
     --success: #27ae60;
     --warning: #f39c12;
-    --dark: #1a1a1a;
     --light: #ffffff;
     --text-primary: #2c3e50;
     --text-secondary: #7f8c8d;
@@ -12,23 +11,11 @@
     --shadow: rgba(0,0,0,0.1);
 }
 
-[data-theme="dark"] {
-    --primary: #34495e;
-    --secondary: #5dade2;
-    --light: #2c3e50;
-    --dark: #ecf0f1;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
     font-family: 'Segoe UI', system-ui, sans-serif;
     background-color: var(--light);
     color: var(--text-primary);
+    margin: 0;
 }
 
 .mobile-header {
@@ -44,14 +31,12 @@ body {
     box-shadow: 0 2px 5px var(--shadow);
     z-index: 1000;
 }
-
 .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
 }
-
 .theme-toggle {
     background: none;
     border: none;
@@ -63,8 +48,109 @@ body {
 .main-content {
     margin-top: 70px;
     padding: 20px;
+    min-height: 70vh;
 }
 
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.filter-controls select {
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 15px;
+}
+
+.routes-container {
+    margin-top: 20px;
+}
+.route-card {
+    background: var(--light);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px var(--shadow);
+}
+.route-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.route-title {
+    font-size: 18px;
+    font-weight: 700;
+}
+.route-duration {
+    background: var(--secondary);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.route-stops {
+    margin: 8px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.stop {
+    background: var(--border);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+.route-stats {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 8px;
+}
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+.route-actions {
+    display: flex;
+    gap: 10px;
+}
+.btn-primary {
+    background: var(--secondary);
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn-secondary {
+    background: none;
+    color: var(--secondary);
+    border: 2px solid var(--secondary);
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.add-route-container {
+    margin-top: 20px;
+    text-align: center;
+}
+.btn-add-route {
+    background: var(--success);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
 .map-container {
     height: 70vh;
     width: 100%;
@@ -72,12 +158,10 @@ body {
     overflow: hidden;
     box-shadow: 0 4px 12px var(--shadow);
 }
-
 #map {
     height: 100%;
     width: 100%;
 }
-
 .bottom-nav {
     position: fixed;
     bottom: 0;
@@ -87,12 +171,10 @@ body {
     background: var(--light);
     border-top: 1px solid var(--border);
 }
-
 .nav-content {
     display: flex;
     height: 100%;
 }
-
 .nav-item {
     flex: 1;
     display: flex;
@@ -102,21 +184,42 @@ body {
     cursor: pointer;
     color: var(--text-secondary);
 }
-
 .nav-item.active {
     color: var(--secondary);
 }
-
-.route-card {
-    background: var(--light);
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 15px;
-    box-shadow: 0 2px 8px var(--shadow);
+.modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-
+.modal-content {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 350px;
+    width: 90%;
+    box-shadow: 0 4px 24px var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+input, textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    font-size: 15px;
+}
+textarea {
+    resize: vertical;
+    min-height: 40px;
+    max-height: 100px;
+}
 @media (max-width: 768px) {
-    .map-container {
-        height: 60vh;
-    }
+    .main-content { padding: 10px; }
+    .map-container { height: 55vh; }
 }
