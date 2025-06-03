@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מתכנן טיולים מתקדם</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --dark: #1a1a1a;
+            --light: #ffffff;
+            --gray: #95a5a6;
+        }
+
+        [data-theme="dark"] {
+            --primary: #34495e;
+            --secondary: #5dade2;
+            --light: #2c3e50;
+            --dark: #ecf0f1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            opacity: 0;
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .map-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .theme-toggle {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .file-upload-zone {
+            border: 3px dashed var(--secondary);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-upload-zone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .file-upload-zone:hover::before {
+            left: 100%;
+        }
+
+        .file-upload-zone:hover {
+            border-color: var(--success);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.3);
+        }
+
+        .budget-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .budget-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .progress-container {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            height: 30px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), #2ecc71);
+            border-radius: 15px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            z-index: 2;
+        }
+
+        .form-group {
+            margin: 15px 0;
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            font-size: 16px;
+            background: rgba(255,255,255,0.9);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--secondary), #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            margin: 5px;
+            width: 100%;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .expense-item {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .expense-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        #map {
+            height: 700px;
+            width: 100%;
+        }
+
+        .recommendations {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .recommendation-item {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .recommendation-item:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-5px);
+        }
+
+        .route-controls {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .location-controls {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .ai-suggestions {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .suggestion-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 3px solid var(--warning);
+        }
+
+        .analytics-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .chart-container {
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--success);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 10px;
+            }
+            
+            body {
+                padding: 10px;
+            }
+            
+            .control-panel {
+                position: static;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <div class="app-container">
+        <div class="control-panel">
+            <div class="app-header">
+                <h1>🗺️ מתכנן טיולים מתקדם</h1>
+                <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+            </div>
+            
+            <!-- File Upload Zone -->
+            <div class="file-upload-zone" onclick="document.getElementById('fileInput').click()">
+                <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.json" style="display:none" onchange="handleFileUpload(event)">
+                <div class="upload-icon">📁</div>
+                <h3>העלה קובץ מסלול</h3>
+                <p>PDF, Word, TXT או JSON</p>
+                <small>גרור קובץ לכאן או לחץ לבחירה</small>
+            </div>
+
+            <!-- Route Controls -->
+            <div class="route-controls">
+                <h3>🛣️ עריכת מסלול ידנית</h3>
+                <button id="editModeBtn" onclick="toggleEditMode()" class="btn">
+                    ✏️ התחל עריכת מסלול
+                </button>
+                <button onclick="clearRoute()" class="btn" style="background: var(--accent);">
+                    🗑️ נקה מסלול
+                </button>
+                <button onclick="saveRoute()" class="btn" style="background: var(--success);">
+                    💾 שמור מסלול
+                </button>
+            </div>
+
+            <!-- Location Controls -->
+            <div class="location-controls">
+                <h3>📍 המלצות לפי מיקום</h3>
+                <button onclick="findNearbyPlaces()" class="btn">
+                    🔍 חפש מקומות באזור
+                </button>
+                <select id="radiusSelect" class="form-input" style="margin: 5px;">
+                    <option value="1000">1 ק"מ</option>
+                    <option value="5000" selected>5 ק"מ</option>
+                    <option value="10000">10 ק"מ</option>
+                    <option value="25000">25 ק"מ</option>
+                </select>
+            </div>
+
+            <!-- Budget Management -->
+            <div class="budget-section">
+                <h3>💰 ניהול תקציב חכם</h3>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="budgetProgress"></div>
+                        <div class="progress-text" id="progressText">0%</div>
+                    </div>
+                </div>
+                <div class="budget-stats">
+                    <p>יתרה: <span id="remainingBudget">5000</span>$ מתוך <span id="totalBudget">5000</span>$</p>
+                    <p>הוצאה יומית ממוצעת: <span id="dailyAverage">0</span>$</p>
+                </div>
+                
+                <div class="form-group">
+                    <input type="number" class="form-input" id="expenseAmount" placeholder="סכום הוצאה" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <select class="form-input" id="expenseCategory">
+                        <option value="">בחר קטגוריה</option>
+                        <option value="לינה">🏨 לינה</option>
+                        <option value="תחבורה">🚗 תחבורה</option>
+                        <option value="אטרקציות">🎢 אטרקציות</option>
+                        <option value="אוכל">🍽️ אוכל</option>
+                        <option value="קניות">🛍️ קניות</option>
+                        <option value="ביטוח">🛡️ ביטוח</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <input type="text" class="form-input" id="expenseDescription" placeholder="תיאור ההוצאה">
+                </div>
+                
+                <button class="btn" onclick="addExpense()">➕ הוסף הוצאה</button>
+                <button class="btn" onclick="exportData()" style="background: var(--success);">📊 ייצא דוח</button>
+                
+                <div id="expensesList"></div>
+            </div>
+
+            <!-- AI Suggestions -->
+            <div class="ai-suggestions">
+                <h3>🤖 המלצות AI</h3>
+                <div id="aiSuggestions">
+                    <div class="suggestion-item">
+                        <strong>💡 חיסכון מומלץ:</strong><br>
+                        לפי הניתוח שלך, תוכל לחסוך 15% על לינה בבחירת מלונות מחוץ למרכז העיר.
+                    </div>
+                    <div class="suggestion-item">
+                        <strong>📍 מסלול מומלץ:</strong><br>
+                        שינוי סדר הביקורים יחסוך לך 2 שעות נסיעה ו-50$ דלק.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Dashboard -->
+            <div class="analytics-section">
+                <h3>📊 אנליטיקה</h3>
+                <div class="chart-container" id="expenseChart">
+                    <canvas id="chartCanvas"></canvas>
+                </div>
+                <div class="analytics-stats">
+                    <p>קטגוריה יקרה ביותר: <span id="topCategory">-</span></p>
+                    <p>חיסכון אפשרי: <span id="potentialSavings">0</span>$</p>
+                </div>
+            </div>
+
+            <!-- Smart Recommendations -->
+            <div class="recommendations">
+                <h3>📍 המלצות חכמות</h3>
+                <div id="nearbyPlaces">
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="width: 20px; height: 20px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; margin: 0 auto;"></div>
+                        <p style="margin-top: 10px;">מחפש המלצות...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notifications"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Enhanced Trip Planner Class
+        class TripPlannerApp {
+            constructor() {
+                this.budget = new BudgetManager();
+                this.map = new MapController();
+                this.fileHandler = new FileUploadHandler();
+                this.routeEditor = new ManualRouteEditor();
+                this.locationRecommendations = new LocationBasedRecommendations();
+                this.notifications = new NotificationManager();
+                
+                this.init();
+            }
+            
+            init() {
+                this.budget.init();
+                this.map.init();
+                this.loadRecommendations();
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                const uploadZone = document.querySelector('.file-upload-zone');
+                
+                uploadZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadZone.style.borderColor = 'var(--success)';
+                });
+                
+                uploadZone.addEventListener('dragleave', () => {
+                    uploadZone.style.borderColor = 'var(--secondary)';
+                });
+                
+                uploadZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadZone.style.borderColor = 'var(--secondary)';
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        this.fileHandler.processFile(files[0]);
+                    }
+                });
+            }
+            
+            loadRecommendations() {
+                setTimeout(() => {
+                    const recommendations = [
+                        {
+                            name: 'מסעדת The Green Elephant',
+                            type: 'מסעדה צמחונית',
+                            rating: 4.5,
+                            price: '$$',
+                            distance: '0.3 מיילים'
+                        },
+                        {
+                            name: 'פארק אקדיה הלאומי',
+                            type: 'פארק לאומי',
+                            rating: 4.8,
+                            price: '$',
+                            distance: '15 מיילים'
+                        },
+                        {
+                            name: 'מוזיאון הימי של מיין',
+                            type: 'מוזיאון',
+                            rating: 4.2,
+                            price: '$$',
+                            distance: '2.1 מיילים'
+                        }
+                    ];
+                    
+                    document.getElementById('nearbyPlaces').innerHTML = recommendations.map(rec => `
+                        <div class="recommendation-item">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>${rec.name}</strong><br>
+                                    <small>${rec.type} • ⭐ ${rec.rating} • ${rec.price} • 📍 ${rec.distance}</small>
+                                </div>
+                                <button class="btn" onclick="app.addToRoute('${rec.name}')" style="padding: 8px 12px; font-size: 12px; width: auto;">
+                                    ➕ הוסף
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                }, 2000);
+            }
+            
+            addToRoute(placeName) {
+                this.notifications.show(`${placeName} נוסף למסלול!`, 'success');
+                this.map.addMarker(placeName);
+            }
+        }
+
+        // Budget Manager Class
+        class BudgetManager {
+            constructor() {
+                this.budget = 5000;
+                this.expenses = JSON.parse(localStorage.getItem('tripExpenses')) || [];
+                this.categories = ['לינה', 'תחבורה', 'אטרקציות', 'אוכל', 'קניות', 'ביטוח'];
+            }
+            
+            init() {
+                this.updateDisplay();
+                this.renderExpenses();
+                this.updateAnalytics();
+            }
+            
+            addExpense(amount, category, description) {
+                if (!this.validateExpense(amount, category)) {
+                    return false;
+                }
+                
+                const expense = {
+                    id: Date.now(),
+                    amount: parseFloat(amount),
+                    category: category,
+                    description: description || '',
+                    date: new Date().toLocaleDateString('he-IL'),
+                    time: new Date().toLocaleTimeString('he-IL'),
+                    timestamp: Date.now()
+                };
+                
+                this.expenses.push(expense);
+                this.saveToStorage();
+                this.updateDisplay();
+                this.renderExpenses();
+                this.updateAnalytics();
+                this.checkBudgetAlerts();
+                
+                return true;
+            }
+            
+            validateExpense(amount, category) {
+                if (!amount || amount <= 0) {
+                    app.notifications.show('נא להזין סכום תקין', 'error');
+                    return false;
+                }
+                
+                if (!category) {
+                    app.notifications.show('נא לבחור קטגוריה', 'error');
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            updateDisplay() {
+                const totalSpent = this.getTotalSpent();
+                const remaining = this.budget - totalSpent;
+                const percentage = (totalSpent / this.budget) * 100;
+                
+                document.getElementById('remainingBudget').textContent = remaining.toFixed(2);
+                document.getElementById('totalBudget').textContent = this.budget;
+                document.getElementById('budgetProgress').style.width = `${Math.min(percentage, 100)}%`;
+                document.getElementById('progressText').textContent = `${percentage.toFixed(1)}%`;
+                document.getElementById('dailyAverage').textContent = this.getDailyAverage().toFixed(2);
+                
+                this.updateProgressColor(percentage);
+            }
+            
+            updateProgressColor(percentage) {
+                const progressBar = document.getElementById('budgetProgress');
+                if (percentage > 90) {
+                    progressBar.style.background = 'linear-gradient(90deg, #e74c3c, #c0392b)';
+                } else if (percentage > 70) {
+                    progressBar.style.background = 'linear-gradient(90deg, #f39c12, #e67e22)';
+                } else {
+                    progressBar.style.background = 'linear-gradient(90deg, #27ae60, #2ecc71)';
+                }
+            }
+            
+            getTotalSpent() {
+                return this.expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            }
+            
+            getDailyAverage() {
+                if (this.expenses.length === 0) return 0;
+                
+                const days = Math.max(1, Math.ceil((Date.now() - this.expenses[0].timestamp) / (1000 * 60 * 60 * 24)));
+                return this.getTotalSpent() / days;
+            }
+            
+            renderExpenses() {
+                const container = document.getElementById('expensesList');
+                if (this.expenses.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; opacity: 0.7; margin: 20px 0;">אין הוצאות עדיין</p>';
+                    return;
+                }
+                
+                container.innerHTML = this.expenses.slice(-5).reverse().map(expense => `
+                    <div class="expense-item">
+                        <div>
+                            <strong>${this.getCategoryIcon(expense.category)} ${expense.category}</strong>
+                            ${expense.description ? `<br><small style="opacity: 0.8;">${expense.description}</small>` : ''}
+                            <br><small style="opacity: 0.6;">${expense.date} ${expense.time}</small>
+                        </div>
+                        <div style="text-align: left;">
+                            <strong style="color: var(--accent);">$${expense.amount}</strong>
+                            <br><button onclick="app.budget.deleteExpense(${expense.id})" 
+                                      style="background: var(--accent); padding: 5px 10px; font-size: 12px; border: none; border-radius: 5px; color: white; cursor: pointer;">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            getCategoryIcon(category) {
+                const icons = {
+                    'לינה': '🏨',
+                    'תחבורה': '🚗',
+                    'אטרקציות': '🎢',
+                    'אוכל': '🍽️',
+                    'קניות': '🛍️',
+                    'ביטוח': '🛡️'
+                };
+                return icons[category] || '💰';
+            }
+            
+            deleteExpense(id) {
+                if (confirm('האם אתה בטוח שברצונך למחוק הוצאה זו?')) {
+                    this.expenses = this.expenses.filter(expense => expense.id !== id);
+                    this.saveToStorage();
+                    this.updateDisplay();
+                    this.renderExpenses();
+                    this.updateAnalytics();
+                    app.notifications.show('ההוצאה נמחקה בהצלחה', 'success');
+                }
+            }
+            
+            checkBudgetAlerts() {
+                const percentage = (this.getTotalSpent() / this.budget) * 100;
+                
+                if (percentage > 90) {
+                    app.notifications.show('⚠️ אזהרה: עברת 90% מהתקציב!', 'error');
+                } else if (percentage > 75) {
+                    app.notifications.show('⚠️ התראה: הגעת ל-75% מהתקציב', 'warning');
+                }
+            }
+            
+            updateAnalytics() {
+                const categoryTotals = this.getCategoryTotals();
+                const topCategory = Object.keys(categoryTotals).reduce((a, b) => 
+                    categoryTotals[a] > categoryTotals[b] ? a : b, Object.keys(categoryTotals)[0]);
+                
+                document.getElementById('topCategory').textContent = topCategory || '-';
+                document.getElementById('potentialSavings').textContent = this.calculatePotentialSavings();
+                
+                this.renderChart(categoryTotals);
+            }
+            
+            getCategoryTotals() {
+                return this.expenses.reduce((totals, expense) => {
+                    totals[expense.category] = (totals[expense.category] || 0) + expense.amount;
+                    return totals;
+                }, {});
+            }
+            
+            calculatePotentialSavings() {
+                const totalSpent = this.getTotalSpent();
+                return Math.round(totalSpent * 0.1);
+            }
+            
+            renderChart(categoryTotals) {
+                const canvas = document.getElementById('chartCanvas');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                
+                if (this.chart) {
+                    this.chart.destroy();
+                }
+                
+                if (Object.keys(categoryTotals).length === 0) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = 'white';
+                    ctx.font = '16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('אין נתונים להצגה', canvas.width/2, canvas.height/2);
+                    return;
+                }
+                
+                this.chart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(categoryTotals),
+                        datasets: [{
+                            data: Object.values(categoryTotals),
+                            backgroundColor: [
+                                '#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: 'white',
+                                    font: {
+                                        size: 10
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            saveToStorage() {
+                localStorage.setItem('tripExpenses', JSON.stringify(this.expenses));
+            }
+            
+            exportData() {
+                const data = {
+                    budget: this.budget,
+                    expenses: this.expenses,
+                    totalSpent: this.getTotalSpent(),
+                    categoryTotals: this.getCategoryTotals(),
+                    exportDate: new Date().toISOString()
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `trip-budget-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                app.notifications.show('הדוח יוצא בהצלחה!', 'success');
+            }
+        }
+
+        // Map Controller Class
+        class MapController {
+            constructor() {
+                this.map = null;
+                this.markers = [];
+            }
+            
+            init() {
+                this.map = L.map('map').setView([39.2904, -76.6122], 6);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(this.map);
+                
+                this.loadDefaultRoute();
+            }
+            
+            loadDefaultRoute() {
+                const routeCoordinates = [
+                    [39.2904, -76.6122], // בולטימור
+                    [43.0718, -70.7626], // פורטסמות'
+                    [44.3106, -69.7795], // אוגוסטה
+                    [44.3876, -68.2039], // בר הרבור
+                    [45.2538, -69.4455], // פטן
+                    [43.6591, -70.2568], // פורטלנד
+                    [40.2943, -76.7944]  // מערות Indian Echo
+                ];
+                
+                const routeLine = L.polyline(routeCoordinates, {
+                    color: '#3498db',
+                    weight: 5,
+                    opacity: 0.8
+                }).addTo(this.map);
+                
+                const locations = [
+                    {coords: [39.2904, -76.6122], name: 'בולטימור - נקודת התחלה', icon: '🏁'},
+                    {coords: [43.0718, -70.7626], name: 'פורטסמות\' - עצירה היסטורית', icon: '⚓'},
+                    {coords: [44.3106, -69.7795], name: 'אוגוסטה - לינה', icon: '🏨'},
+                    {coords: [44.3876, -68.2039], name: 'בר הרבור - צפייה בלווייתנים', icon: '🐋'},
+                    {coords: [45.2538, -69.4455], name: 'פטן - תצפית כוכבים', icon: '⭐'},
+                    {coords: [43.6591, -70.2568], name: 'פורטלנד - עיר עתיקה', icon: '🏛️'},
+                    {coords: [40.2943, -76.7944], name: 'מערות Indian Echo - סיום', icon: '🕳️'}
+                ];
+                
+                locations.forEach(location => {
+                    const marker = L.marker(location.coords)
+                        .addTo(this.map)
+                        .bindPopup(`<b>${location.icon} ${location.name}</b>`);
+                    this.markers.push(marker);
+                });
+                
+                this.map.fitBounds(routeLine.getBounds(), {padding: [20, 20]});
+            }
+            
+            addMarker(placeName) {
+                const randomLat = 43 + Math.random() * 2;
+                const randomLng = -70 + Math.random() * 2;
+                
+                const marker = L.marker([randomLat, randomLng])
+                    .addTo(this.map)
+                    .bindPopup(`<b>📍 ${placeName}</b><br>נוסף על ידי המלצת AI`);
+                
+                this.markers.push(marker);
+            }
+        }
+
+        // Manual Route Editor Class
+        class ManualRouteEditor {
+            constructor() {
+                this.isEditMode = false;
+                this.routePoints = [];
+                this.currentRoute = null;
+            }
+            
+            enableEditMode() {
+                this.isEditMode = true;
+                app.map.map.on('click', this.addRoutePoint.bind(this));
+                document.getElementById('editModeBtn').textContent = '🛑 סיים עריכה';
+                app.notifications.show('מצב עריכה פעיל - לחץ על המפה להוספת נקודות', 'info');
+            }
+            
+            disableEditMode() {
+                this.isEditMode = false;
+                app.map.map.off('click', this.addRoutePoint);
+                document.getElementById('editModeBtn').textContent = '✏️ התחל עריכת מסלול';
+                app.notifications.show('מצב עריכה כבוי', 'info');
+            }
+            
+            addRoutePoint(e) {
+                if (!this.isEditMode) return;
+                
+                const point = {
+                    lat: e.latlng.lat,
+                    lng: e.latlng.lng,
+                    name: `נקודה ${this.routePoints.length + 1}`
+                };
+                
+                this.routePoints.push(point);
+                
+                const marker = L.marker([point.lat, point.lng])
+                    .addTo(app.map.map)
+                    .bindPopup(`<b>${point.name}</b><br>לחץ כפול למחיקה`)
+                    .on('dblclick', () => this.removePoint(point));
+                
+                this.updateRoute();
+            }
+            
+            updateRoute() {
+                if (this.routePoints.length < 2) return;
+                
+                if (this.currentRoute) {
+                    app.map.map.removeLayer(this.currentRoute);
+                }
+                
+                const coordinates = this.routePoints.map(p => [p.lat, p.lng]);
+                this.currentRoute = L.polyline(coordinates, {
+                    color: '#e74c3c',
+                    weight: 4,
+                    opacity: 0.8
+                }).addTo(app.map.map);
+            }
+            
+            clearRoute() {
+                this.routePoints = [];
+                if (this.currentRoute) {
+                    app.map.map.removeLayer(this.currentRoute);
+                    this.currentRoute = null;
+                }
+            }
+            
+            exportRoute() {
+                return {
+                    points: this.routePoints,
+                    timestamp: Date.now()
+                };
+            }
+        }
+
+        // File Upload Handler Class
+        class FileUploadHandler {
+            processFile(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const content = e.target.result;
+                    this.parseContent(content, file.name, file.type);
+                };
+                
+                if (file.type === 'application/json') {
+                    reader.readAsText(file);
+                } else {
+                    reader.readAsText(file);
+                }
+            }
+            
+            parseContent(content, fileName, fileType) {
+                try {
+                    if (fileType === 'application/json') {
+                        const data = JSON.parse(content);
+                        this.importTripData(data);
+                    } else {
+                        this.extractLocations(content, fileName);
+                    }
+                } catch (error) {
+                    app.notifications.show('שגיאה בעיבוד הקובץ', 'error');
+                }
+            }
+            
+            importTripData(data) {
+                if (data.expenses && Array.isArray(data.expenses)) {
+                    app.budget.expenses = [...app.budget.expenses, ...data.expenses];
+                    app.budget.saveToStorage();
+                    app.budget.updateDisplay();
+                    app.budget.renderExpenses();
+                    app.notifications.show('נתוני הטיול יובאו בהצלחה!', 'success');
+                }
+            }
+            
+            extractLocations(text, fileName) {
+                const locationRegex = /([A-Za-z\s]+,\s*[A-Z]{2})|(\d+\s+[A-Za-z\s]+)/g;
+                const matches = text.match(locationRegex) || [];
+                
+                if (matches.length > 0) {
+                    app.notifications.show(`נמצאו ${matches.length} מיקומים בקובץ ${fileName}`, 'success');
+                    matches.slice(0, 5).forEach(location => {
+                        console.log(`מיקום נמצא: ${location}`);
+                    });
+                } else {
+                    app.notifications.show(`לא נמצאו מיקומים מזוהים בקובץ ${fileName}`, 'warning');
+                }
+            }
+        }
+
+        // Location Based Recommendations Class
+        class LocationBasedRecommendations {
+            constructor() {
+                this.userLocation = null;
+                this.nearbyPlaces = [];
+            }
+            
+            async getCurrentLocation() {
+                return new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            this.userLocation = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude
+                            };
+                            resolve(this.userLocation);
+                        },
+                        reject,
+                        { enableHighAccuracy: true, timeout: 10000 }
+                    );
+                });
+            }
+            
+            async findNearbyPlaces(radius = 5000) {
+                try {
+                    await this.getCurrentLocation();
+                    app.notifications.show('מיקום זוהה! מחפש המלצות...', 'success');
+                    
+                    // סימולציה של חיפוש מקומות
+                    setTimeout(() => {
+                        const mockPlaces = [
+                            {name: 'מסעדה מקומית', type: 'מסעדה', distance: '0.5 ק"מ'},
+                            {name: 'מוזיאון היסטורי', type: 'מוזיאון', distance: '1.2 ק"מ'},
+                            {name: 'פארק עירוני', type: 'פארק', distance: '0.8 ק"מ'}
+                        ];
+                        
+                        this.displayRecommendations(mockPlaces);
+                        app.notifications.show('נמצאו המלצות חדשות!', 'success');
+                    }, 1000);
+                    
+                } catch (error) {
+                    app.notifications.show('לא ניתן לגשת למיקום', 'error');
+                }
+            }
+            
+            displayRecommendations(places) {
+                const container = document.getElementById('nearbyPlaces');
+                container.innerHTML = places.map(place => `
+                    <div class="recommendation-item">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>${place.name}</strong><br>
+                                <small>${place.type} • 📍 ${place.distance}</small>
+                            </div>
+                            <div>
+                                <button onclick="app.map.addMarker('${place.name}')" 
+                                        style="padding: 5px 10px; font-size: 12px; margin: 2px; background: var(--secondary); color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                    📍 הוסף למפה
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Notification Manager Class
+        class NotificationManager {
+            show(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.textContent = message;
+                
+                const colors = {
+                    success: '#27ae60',
+                    error: '#e74c3c',
+                    warning: '#f39c12',
+                    info: '#3498db'
+                };
+                
+                notification.style.background = colors[type] || colors.info;
+                
+                document.getElementById('notifications').appendChild(notification);
+                
+                setTimeout(() => notification.classList.add('show'), 100);
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+        }
+
+        // Global functions
+        function addExpense() {
+            const amount = document.getElementById('expenseAmount').value;
+            const category = document.getElementById('expenseCategory').value;
+            const description = document.getElementById('expenseDescription').value;
+            
+            if (app.budget.addExpense(amount, category, description)) {
+                document.getElementById('expenseAmount').value = '';
+                document.getElementById('expenseCategory').value = '';
+                document.getElementById('expenseDescription').value = '';
+                app.notifications.show('ההוצאה נוספה בהצלחה!', 'success');
+            }
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                app.fileHandler.processFile(file);
+            }
+        }
+
+        function exportData() {
+            app.budget.exportData();
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            
+            const themeButton = document.querySelector('.theme-toggle');
+            themeButton.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            
+            localStorage.setItem('theme', newTheme);
+        }
+
+        function toggleEditMode() {
+            if (!app.routeEditor.isEditMode) {
+                app.routeEditor.enableEditMode();
+            } else {
+                app.routeEditor.disableEditMode();
+            }
+        }
+
+        function clearRoute() {
+            if (confirm('למחוק את המסלול הנוכחי?')) {
+                app.routeEditor.clearRoute();
+                app.notifications.show('המסלול נמחק', 'success');
+            }
+        }
+
+        function saveRoute() {
+            const routeData = app.routeEditor.exportRoute();
+            localStorage.setItem('customRoute', JSON.stringify(routeData));
+            app.notifications.show('המסלול נשמר בהצלחה!', 'success');
+        }
+
+        async function findNearbyPlaces() {
+            const radius = document.getElementById('radiusSelect').value;
+            app.notifications.show('מחפש מקומות באזור...', 'info');
+            
+            try {
+                await app.locationRecommendations.findNearbyPlaces(parseInt(radius));
+            } catch (error) {
+                app.notifications.show('לא ניתן לגשת למיקום', 'error');
+            }
+        }
+
+        // Initialize app
+        let app;
+        document.addEventListener('DOMContentLoaded', () => {
+            app = new TripPlannerApp();
+            
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.body.setAttribute('data-theme', savedTheme);
+                document.querySelector('.theme-toggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+            }
+        });
+
+        // Add spin animation for loading
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
